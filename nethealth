@@ -2,7 +2,19 @@
 
 # POC implementation that focuses only on the network login without taking any parameters and
 # outputting only to stdout and stderr.
-# - Test DNS name lookup to 'accezz.io'
-# - Test DNS name lookup to 'yahoo.com'
+# ✓ Test DNS name lookup to 'accezz.io'
+# ✓ Test DNS name lookup to 'yahoo.com'
 # - Measure HTTP bandwidth to <file-URL>
 # - Measure HTTPS bandwidth to <file-URL>
+
+import socket
+
+accezz_url = 'accezz.io'
+print("DNS LOOKUP '" + accezz_url + "': ", end="")
+accezz_ip_address = socket.gethostbyname(accezz_url)
+print(accezz_ip_address)
+
+yahoo_url = 'yahoo.com'
+print("DNS LOOKUP '" + yahoo_url + "': ", end="")
+yahoo_ip_address = socket.gethostbyname(yahoo_url)
+print(yahoo_ip_address)
