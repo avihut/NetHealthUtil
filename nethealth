@@ -7,11 +7,41 @@
 # - Measure HTTP bandwidth to <file-URL>
 # - Measure HTTPS bandwidth to <file-URL>
 
+from subprocess import Popen, PIPE
+from urllib.parse import urlparse
 import socket
+import re
 
 def dns_lookup(url_str):
-    print('DNS LOOKUP %s: ' % url_str, end='')
+    print("DNS LOOKUP %s: " % url_str, end='')
     print(socket.gethostbyname(url_str))
+
+def extract_ping_time_from_line(line):
+    m = re.search('.*time=(\d+.\d*)', line)
+    if m:
+        return m.group(1)
+    return None
+
+def test_ping_to_uri(uri_str):
+    hostname = urlparse(uri_str).netloc
+    p = Popen(['ping', '-c 3', hostname], stdout=PIPE)
+
+    ping_measurements = []
+    for ping_line in iter(p.stdout.readline, b''):
+        ping_line = ping_line.decode()
+        ping_time_str = extract_ping_time_from_line(ping_line)
+        if ping_time_str:
+            ping_time = float(ping_time_str)
+            ping_measurements.append(ping_time)
+            print("Ping time to '%s': %.3f ms" % (hostname, ping_time), end='\r')
+
+    average_ping_time = sum(ping_measurements) / len(ping_measurements)
+    print("Average ping time to '%s': %.3f ms" % (hostname, average_ping_time))
+
+def test_connectivity_to_uri(uri_str):
+    print("CONNECTIVITY to '%s'" % uri_str)
+    test_ping_to_uri(uri_str)
     
 dns_lookup('accezz.io')
 dns_lookup('yahoo.com')
+test_connectivity_to_uri('http://download.thinkbroadband.com/5MB.zip')
