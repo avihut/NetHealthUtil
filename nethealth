@@ -9,12 +9,9 @@
 
 import socket
 
-accezz_url = 'accezz.io'
-print("DNS LOOKUP '" + accezz_url + "': ", end="")
-accezz_ip_address = socket.gethostbyname(accezz_url)
-print(accezz_ip_address)
-
-yahoo_url = 'yahoo.com'
-print("DNS LOOKUP '" + yahoo_url + "': ", end="")
-yahoo_ip_address = socket.gethostbyname(yahoo_url)
-print(yahoo_ip_address)
+def dns_lookup(url_str):
+    print('DNS LOOKUP %s: ' % url_str, end='')
+    print(socket.gethostbyname(url_str))
+    
+dns_lookup('accezz.io')
+dns_lookup('yahoo.com')
