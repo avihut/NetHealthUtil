@@ -1,0 +1,17 @@
+[
+  {
+    "DnsLookup": {
+      "Url": "accezz.io"
+    }
+  },
+  {
+    "DnsLookup": {
+      "Url": "yahoo.com"
+    }
+  },
+  {
+    "Connectivity": {
+      "Url": "http://download.thinkbroadband.com/5MB.zip"
+    }
+  }
+]

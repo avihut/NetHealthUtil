@@ -1,0 +1,34 @@
+[
+  {
+    "DnsLookupResults": {
+      "Url": "accezz.io",
+      "Time": "2017-01-12T13:37:27+00:00",
+      "IPv4": [
+        "50.63.202.27"
+      ]
+    }
+  },
+  {
+    "DnsLookupResult": {
+      "Url": "yahoo.com",
+      "Time": "2017-01-12T13:37:27+00:00",
+      "IPv4": [
+        "98.139.183.24",
+        "206.190.36.45",
+        "98.138.253.109"
+      ]
+    }
+  },
+  {
+    "ConnectivityResult": {
+      "Url": "http://download.thinkbroadband.com/5MB.zip",
+      "Time": "2017-01-12T13:37:27+00:00",
+      "Ping": {
+        "All": [
+          205.344, 212.883, 203.675
+        ]
+      },
+      "AvgDownloadBps": 2354145
+    }
+  }
+]
