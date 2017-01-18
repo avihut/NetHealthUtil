@@ -8,8 +8,8 @@ class DnsLookupResult(OperationResult):
         self.ipv6s = ipv6s
 
 class DnsLookup(Operation):
-    def __init__(self, url):
-        super().__init__()
+    def __init__(self, url, delegate=None):
+        super().__init__(delegate=delegate)
         self.url = url
 
     def perform_operation(self):

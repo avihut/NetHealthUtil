@@ -13,6 +13,7 @@ import socket
 import re
 
 from operations.dnsops import DnsLookup, DnsLookupResult
+from ui.term.dnsops_presenter import DnsLookupTerminalPresenter
 
 def dns_lookup(url_str):
     print("DNS LOOKUP %s: " % url_str, end='')
@@ -44,7 +45,7 @@ def test_connectivity_to_uri(uri_str):
     print("CONNECTIVITY to '%s'" % uri_str)
     test_ping_to_uri(uri_str)
     
-# dns_lookup('accezz.io')
-print(DnsLookup('accezz.io').run().ipv4s)
-dns_lookup('yahoo.com')
+dns_presenter = DnsLookupTerminalPresenter()
+DnsLookup('accezz.io', delegate=dns_presenter).run()
+DnsLookup('yahoo.com', delegate=dns_presenter).run()
 test_connectivity_to_uri('http://download.thinkbroadband.com/5MB.zip')

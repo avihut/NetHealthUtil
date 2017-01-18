@@ -5,22 +5,22 @@ class OperationResult:
         self.timestamp = (timestamp if timestamp else datetime.now())
 
 class OperationDelegate:
-    def operation_started(self):
+    def operation_started(self, op):
         pass
 
     def operation_finished(self, result):
         pass
 
 class Operation:
-    def __init__(self):
+    def __init__(self, delegate=None):
         self.result = None
-        self.delegate = None
+        self.delegate = delegate
 
     def perform_operation(self):
         pass
 
     def run(self):
-        self.delegate.operation_started() if self.delegate else None
+        self.delegate.operation_started(op=self) if self.delegate else None
         self.result = self.perform_operation()
         self.delegate.operation_finished(self.result) if self.delegate else None
         return self.result
