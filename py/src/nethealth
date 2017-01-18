@@ -12,6 +12,8 @@ from urllib.parse import urlparse
 import socket
 import re
 
+from operations.dnsops import DnsLookup, DnsLookupResult
+
 def dns_lookup(url_str):
     print("DNS LOOKUP %s: " % url_str, end='')
     print(socket.gethostbyname(url_str))
@@ -42,6 +44,7 @@ def test_connectivity_to_uri(uri_str):
     print("CONNECTIVITY to '%s'" % uri_str)
     test_ping_to_uri(uri_str)
     
-dns_lookup('accezz.io')
+# dns_lookup('accezz.io')
+print(DnsLookup('accezz.io').run())
 dns_lookup('yahoo.com')
 test_connectivity_to_uri('http://download.thinkbroadband.com/5MB.zip')
