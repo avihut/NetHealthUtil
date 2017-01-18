@@ -12,6 +12,6 @@ class DnsLookup(Operation):
         super().__init__()
         self.url = url
 
-    def run(self):
+    def perform_operation(self):
         ip = socket.gethostbyname(self.url)
         return DnsLookupResult(ipv4s = {ip})
