@@ -1,10 +1,14 @@
-from operations.operation import Operation, OperationResult
+from operations.operation import Operation, OperationResult, OperationDelegate
 from subprocess import Popen, PIPE
 from urllib.parse import urlparse
 import re
 
 PING_CMD = 'ping'
 PING_OPT_COUNT = '-c'
+
+class PingOpDelegate(OperationDelegate):
+    def new_ping_result(self, op, ping_time):
+        pass
 
 class PingOpResult(OperationResult):
     def __init__(self, timestamp=None, ping_times=[]):
@@ -30,12 +34,14 @@ class PingOp(Operation):
             ping_line = ping_line.decode()
             ping_time_str = self.__extract_ping_time_from_line(ping_line)
             if ping_time_str:
-                self.ping_times.append(float(ping_time_str))
+                ping_time = float(ping_time_str)
+                self.ping_times.append(ping_time)
+                self.delegate.new_ping_result(self, ping_time) if self.delegate else None
 
     def __extract_ping_time_from_line(self, line):
         matches = re.search('.*time=(\d+.\d*)', line)
         if matches:
-            return m.group(1)
+            return matches.group(1)
         return None
 
 class SpeedTestOp(Operation):
@@ -48,7 +54,7 @@ class SpeedTestOp(Operation):
 
 class ConnectivityOp(Operation):
     def __init__(self, url, ping_count=3, delegate=None):
-        super.().__init__(delegate=delegate)
+        super().__init__(delegate=delegate)
         ping_op_delegate = (delegate.ping_op_delegate if hasattr(delegate, 'ping_op_delegate') else None)
         speedtest_op_delegate = (delegate.speedtest_op_delegate if hasattr(delegate, 'speedtest_op_delegate') else None)
 

@@ -1,46 +1,13 @@
 #!/usr/local/bin/python3
 
-# POC implementation that focuses only on the network login without taking any parameters and
-# outputting only to stdout and stderr.
-# ✓ Test DNS name lookup to 'accezz.io'
-# ✓ Test DNS name lookup to 'yahoo.com'
-# - Measure HTTP bandwidth to <file-URL>
-# - Measure HTTPS bandwidth to <file-URL>
-
-from subprocess import Popen, PIPE
-from urllib.parse import urlparse
-import re
-
-from operations.dnsops import DnsLookupOp
 from ui.term.dnsops_presenter import DnsLookupTerminalPresenter
+from ui.term.connectivity_presenter import PingOpTerminalPresenter
+from operations.dnsops import DnsLookupOp
+from operations.connectivity import PingOp
 
-def extract_ping_time_from_line(line):
-    m = re.search('.*time=(\d+.\d*)', line)
-    if m:
-        return m.group(1)
-    return None
-
-def test_ping_to_uri(uri_str):
-    hostname = urlparse(uri_str).netloc
-    p = Popen(['ping', '-c 3', hostname], stdout=PIPE)
-
-    ping_measurements = []
-    for ping_line in iter(p.stdout.readline, b''):
-        ping_line = ping_line.decode()
-        ping_time_str = extract_ping_time_from_line(ping_line)
-        if ping_time_str:
-            ping_time = float(ping_time_str)
-            ping_measurements.append(ping_time)
-            print("Ping time to '%s': %.3f ms" % (hostname, ping_time), end='\r')
-
-    average_ping_time = sum(ping_measurements) / len(ping_measurements)
-    print("Average ping time to '%s': %.3f ms" % (hostname, average_ping_time))
-
-def test_connectivity_to_uri(uri_str):
-    print("CONNECTIVITY to '%s'" % uri_str)
-    test_ping_to_uri(uri_str)
-    
 dns_presenter = DnsLookupTerminalPresenter()
 DnsLookupOp('accezz.io', delegate=dns_presenter).run()
 DnsLookupOp('yahoo.com', delegate=dns_presenter).run()
-test_connectivity_to_uri('http://download.thinkbroadband.com/5MB.zip')
+
+ping_presenter = PingOpTerminalPresenter()
+PingOp('http://download.thinkbroadband.com/5MB.zip', delegate=ping_presenter).run()
