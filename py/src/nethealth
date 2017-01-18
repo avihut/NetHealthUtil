@@ -9,10 +9,9 @@
 
 from subprocess import Popen, PIPE
 from urllib.parse import urlparse
-import socket
 import re
 
-from operations.dnsops import DnsLookupOp, DnsLookupResult
+from operations.dnsops import DnsLookupOp
 from ui.term.dnsops_presenter import DnsLookupTerminalPresenter
 
 def extract_ping_time_from_line(line):
