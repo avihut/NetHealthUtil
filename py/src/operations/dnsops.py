@@ -1,4 +1,5 @@
 from operations.operation import Operation, OperationResult
+from urllib.parse import urlparse
 import socket
 
 class DnsLookupResult(OperationResult):
@@ -7,11 +8,13 @@ class DnsLookupResult(OperationResult):
         self.ipv4s = ipv4s
         self.ipv6s = ipv6s
 
-class DnsLookup(Operation):
+class DnsLookupOp(Operation):
     def __init__(self, url, delegate=None):
         super().__init__(delegate=delegate)
         self.url = url
+        parsed_url = urlparse(self.url)
+        self.hostname = (parsed_url.netloc if parsed_url.netloc else parsed_url.path)
 
     def perform_operation(self):
-        ip = socket.gethostbyname(self.url)
+        ip = socket.gethostbyname(self.hostname)
         return DnsLookupResult(ipv4s = {ip})

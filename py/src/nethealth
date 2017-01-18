@@ -12,12 +12,8 @@ from urllib.parse import urlparse
 import socket
 import re
 
-from operations.dnsops import DnsLookup, DnsLookupResult
+from operations.dnsops import DnsLookupOp, DnsLookupResult
 from ui.term.dnsops_presenter import DnsLookupTerminalPresenter
-
-def dns_lookup(url_str):
-    print("DNS LOOKUP %s: " % url_str, end='')
-    print(socket.gethostbyname(url_str))
 
 def extract_ping_time_from_line(line):
     m = re.search('.*time=(\d+.\d*)', line)
@@ -46,6 +42,6 @@ def test_connectivity_to_uri(uri_str):
     test_ping_to_uri(uri_str)
     
 dns_presenter = DnsLookupTerminalPresenter()
-DnsLookup('accezz.io', delegate=dns_presenter).run()
-DnsLookup('yahoo.com', delegate=dns_presenter).run()
+DnsLookupOp('accezz.io', delegate=dns_presenter).run()
+DnsLookupOp('yahoo.com', delegate=dns_presenter).run()
 test_connectivity_to_uri('http://download.thinkbroadband.com/5MB.zip')
