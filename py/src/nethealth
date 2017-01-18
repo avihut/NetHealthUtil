@@ -10,4 +10,4 @@ DnsLookupOp('accezz.io', delegate=dns_presenter).run()
 DnsLookupOp('yahoo.com', delegate=dns_presenter).run()
 
 ping_presenter = PingOpTerminalPresenter()
-PingOp('http://download.thinkbroadband.com/5MB.zip', delegate=ping_presenter).run()
+PingOp('http://download.thinkbroadband.com/5MB.zip', count=10, delegate=ping_presenter).run()

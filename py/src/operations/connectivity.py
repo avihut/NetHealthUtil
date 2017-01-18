@@ -7,7 +7,7 @@ PING_CMD = 'ping'
 PING_OPT_COUNT = '-c'
 
 class PingOpDelegate(OperationDelegate):
-    def new_ping_result(self, op, ping_time):
+    def new_ping_result(self, op, ping_number, total_pings_count, ping_time):
         pass
 
 class PingOpResult(OperationResult):
@@ -30,13 +30,15 @@ class PingOp(Operation):
         PingOpResult(ping_times=self.ping_times)
 
     def __parse_ping_cmd_output(self, process):
+        pings_count = 1
         for ping_line in iter(process.stdout.readline, b''):
             ping_line = ping_line.decode()
             ping_time_str = self.__extract_ping_time_from_line(ping_line)
             if ping_time_str:
                 ping_time = float(ping_time_str)
                 self.ping_times.append(ping_time)
-                self.delegate.new_ping_result(self, ping_time) if self.delegate else None
+                self.delegate.new_ping_result(self, pings_count, self.count, ping_time) if self.delegate else None
+                pings_count += 1
 
     def __extract_ping_time_from_line(self, line):
         matches = re.search('.*time=(\d+.\d*)', line)
