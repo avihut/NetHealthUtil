@@ -1,4 +1,4 @@
-from operations.connectivity import PingOpDelegate
+from operations import PingOpDelegate
 from ui.term.spinner import Spinner
 
 class PingOpTerminalPresenter(PingOpDelegate):

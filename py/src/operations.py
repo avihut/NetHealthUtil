@@ -1,7 +1,51 @@
-from operations.operation import Operation, OperationResult, OperationDelegate
 from subprocess import Popen, PIPE
 from urllib.parse import urlparse
+from datetime import datetime
+import socket
 import re
+
+class OperationResult:
+    def __init__(self, timestamp=None):
+        self.timestamp = (timestamp if timestamp else datetime.now())
+
+class OperationDelegate:
+    def operation_started(self, op):
+        pass
+
+    def operation_finished(self, op, result):
+        pass
+
+class Operation:
+    def __init__(self, delegate=None):
+        self.result = None
+        self.delegate = delegate
+
+    def perform_operation(self):
+        pass
+
+    def run(self):
+        self.delegate.operation_started(op=self) if self.delegate else None
+        self.result = self.perform_operation()
+        self.delegate.operation_finished(self, self.result) if self.delegate else None
+        return self.result
+
+
+class DnsLookupResult(OperationResult):
+    def __init__(self, timestamp=None, ipv4s={}, ipv6s={}):
+        super().__init__(timestamp=timestamp)
+        self.ipv4s = ipv4s
+        self.ipv6s = ipv6s
+
+class DnsLookupOp(Operation):
+    def __init__(self, url, delegate=None):
+        super().__init__(delegate=delegate)
+        self.url = url
+        parsed_url = urlparse(self.url)
+        self.hostname = (parsed_url.netloc if parsed_url.netloc else parsed_url.path)
+
+    def perform_operation(self):
+        ip = socket.gethostbyname(self.hostname)
+        return DnsLookupResult(ipv4s = {ip})
 
 PING_CMD = 'ping'
 PING_OPT_COUNT = '-c'

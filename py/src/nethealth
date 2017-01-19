@@ -3,8 +3,8 @@
 if __name__ == '__main__':
     from ui.term.dnsops_presenter import DnsLookupTerminalPresenter
     from ui.term.connectivity_presenter import PingOpTerminalPresenter
-    from operations.dnsops import DnsLookupOp
-    from operations.connectivity import PingOp
+    from operations import DnsLookupOp
+    from operations import PingOp
 
     dns_presenter = DnsLookupTerminalPresenter()
     DnsLookupOp('accezz.io', delegate=dns_presenter).run()

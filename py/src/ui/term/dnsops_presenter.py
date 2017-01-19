@@ -1,4 +1,4 @@
-from operations.operation import OperationDelegate
+from operations import OperationDelegate
 
 class DnsLookupTerminalPresenter(OperationDelegate):
     def operation_started(self, op):
