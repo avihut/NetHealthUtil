@@ -1,13 +1,14 @@
 #!/usr/local/bin/python3
 
-from ui.term.dnsops_presenter import DnsLookupTerminalPresenter
-from ui.term.connectivity_presenter import PingOpTerminalPresenter
-from operations.dnsops import DnsLookupOp
-from operations.connectivity import PingOp
+if __name__ == '__main__':
+    from ui.term.dnsops_presenter import DnsLookupTerminalPresenter
+    from ui.term.connectivity_presenter import PingOpTerminalPresenter
+    from operations.dnsops import DnsLookupOp
+    from operations.connectivity import PingOp
 
-dns_presenter = DnsLookupTerminalPresenter()
-DnsLookupOp('accezz.io', delegate=dns_presenter).run()
-DnsLookupOp('yahoo.com', delegate=dns_presenter).run()
+    dns_presenter = DnsLookupTerminalPresenter()
+    DnsLookupOp('accezz.io', delegate=dns_presenter).run()
+    DnsLookupOp('yahoo.com', delegate=dns_presenter).run()
 
-ping_presenter = PingOpTerminalPresenter()
-PingOp('http://download.thinkbroadband.com/5MB.zip', count=10, delegate=ping_presenter).run()
+    ping_presenter = PingOpTerminalPresenter()
+    PingOp('http://download.thinkbroadband.com/5MB.zip', delegate=ping_presenter).run()
