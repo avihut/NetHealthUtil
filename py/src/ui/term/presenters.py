@@ -1,7 +1,6 @@
-from operations import PingOpDelegate, OperationDelegate
 from ui.term.spinner import Spinner
 
-class DnsLookupTerminalPresenter(OperationDelegate):
+class DnsLookupTerminalPresenter:
     def present_dns_lookup_op(self, op, result_pending=True):
         op_description = "DNS LOOKUP '%s': " % op.hostname
         if result_pending:
@@ -12,7 +11,7 @@ class DnsLookupTerminalPresenter(OperationDelegate):
     def present_dns_lookup_result(self, result):
         print("IPv4: %s, IPv6: %s" % (str(result.ipv4s), str(result.ipv6s)))
 
-class PingOpTerminalPresenter(PingOpDelegate):
+class PingOpTerminalPresenter:
     def present_op(self, op):
         print("Measure latency to '%s' %s" % (op.hostname, Spinner.get_symbol_for_index(0)), end='')
 

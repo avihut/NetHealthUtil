@@ -1,7 +1,7 @@
 #!/usr/local/bin/python3
 
 if __name__ == '__main__':
-    from operations_controller import OperationsController
+    from controllers import OperationsController
     from operations import DnsLookupOp, PingOp
 
     operations_controller = OperationsController()
