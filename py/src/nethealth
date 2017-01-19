@@ -1,10 +1,10 @@
 #!/usr/local/bin/python3
 
 if __name__ == '__main__':
-    from health_checkup_controller import HealthCheckupController
+    from operations_controller import OperationsController
     from operations import DnsLookupOp, PingOp
 
-    operations_controller = HealthCheckupController()
+    operations_controller = OperationsController()
     operations_controller.operations = [
         DnsLookupOp('accezz.io'),
         DnsLookupOp('yahoo.com'),

@@ -1,7 +1,7 @@
 from ui.term.presenters import DnsLookupTerminalPresenter, PingOpTerminalPresenter
 from operations import DnsLookupDelegate, PingOpDelegate
 
-class HealthCheckupController(DnsLookupDelegate, PingOpDelegate):
+class OperationsController(DnsLookupDelegate, PingOpDelegate):
     def __init__(self):
         self.operations = []
         self.__initialize_presenters()
