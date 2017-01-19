@@ -20,15 +20,15 @@ class Operation:
         self.result = None
         self.delegate = delegate
 
-    def perform_operation(self):
+    def run(self):
         pass
 
-    def run(self):
-        self.delegate.operation_started(op=self) if self.delegate else None
-        self.result = self.perform_operation()
-        self.delegate.operation_finished(self, self.result) if self.delegate else None
-        return self.result
+class DnsLookupDelegate(OperationDelegate):
+    def dnslookup_started(self, op):
+        pass
 
+    def dnslookup_finished(self, op, result):
+        pass
 
 class DnsLookupResult(OperationResult):
     def __init__(self, timestamp=None, ipv4s={}, ipv6s={}):
@@ -38,19 +38,35 @@ class DnsLookupResult(OperationResult):
 
 class DnsLookupOp(Operation):
     def __init__(self, url, delegate=None):
+        if delegate and not isinstance(delegate, DnsLookupDelegate):
+            raise TypeError('delegate must be of type DnsLookupDelegate')
+
         super().__init__(delegate=delegate)
         self.url = url
         parsed_url = urlparse(self.url)
         self.hostname = (parsed_url.netloc if parsed_url.netloc else parsed_url.path)
 
-    def perform_operation(self):
+    def run(self):
+        delegate = self.delegate
+        delegate.dnslookup_started(self) if delegate else None
+
         ip = socket.gethostbyname(self.hostname)
-        return DnsLookupResult(ipv4s = {ip})
+        result = DnsLookupResult(ipv4s = {ip})
+
+        delegate.dnslookup_finished(self, result) if delegate else None
+        return result
+
 
 PING_CMD = 'ping'
 PING_OPT_COUNT = '-c'
 
 class PingOpDelegate(OperationDelegate):
+    def ping_operation_started(self, op):
+        pass
+
+    def ping_operation_finished(self, op, result):
+        pass
+
     def new_ping_result(self, op, ping_number, total_pings_count, ping_time):
         pass
 
@@ -59,19 +75,32 @@ class PingOpResult(OperationResult):
         super().__init__(timestamp=timestamp)
         self.ping_times = ping_times
 
+    @property
+    def average_ping_time(self):
+        return sum(self.ping_times) / len(self.ping_times)
+
 class PingOp(Operation):
     def __init__(self, url, count=3, delegate=None):
+        if delegate and not isinstance(delegate, PingOpDelegate):
+            raise TypeError('delegate must be of type PingOpDelegate')
+
         super().__init__(delegate=delegate)
         self.url = url
         self.count = count
         parsed_url = urlparse(self.url)
         self.hostname = (parsed_url.netloc if parsed_url.netloc else parsed_url.path)
 
-    def perform_operation(self):
+    def run(self):
+        delegate = self.delegate
+        delegate.ping_operation_started(self) if delegate else None
+
         process = Popen([PING_CMD, PING_OPT_COUNT, str(self.count), self.hostname], stdout=PIPE)
         self.ping_times = []
         self.__parse_ping_cmd_output(process)
-        PingOpResult(ping_times=self.ping_times)
+        result = PingOpResult(ping_times=self.ping_times)
+
+        delegate.ping_operation_finished(self, result)
+        return result
 
     def __parse_ping_cmd_output(self, process):
         pings_count = 1
@@ -95,7 +124,7 @@ class SpeedTestOp(Operation):
         super().__init__(delegate=delegate)
         self.urll = url
 
-    def perfomr_operation(self):
+    def perform_operation(self):
         pass
 
 class ConnectivityOp(Operation):

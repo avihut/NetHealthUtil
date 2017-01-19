@@ -1,14 +1,13 @@
 #!/usr/local/bin/python3
 
 if __name__ == '__main__':
-    from ui.term.presenters import DnsLookupTerminalPresenter
-    from ui.term.presenters import PingOpTerminalPresenter
-    from operations import DnsLookupOp
-    from operations import PingOp
+    from health_checkup_controller import HealthCheckupController
+    from operations import DnsLookupOp, PingOp
 
-    dns_presenter = DnsLookupTerminalPresenter()
-    DnsLookupOp('accezz.io', delegate=dns_presenter).run()
-    DnsLookupOp('yahoo.com', delegate=dns_presenter).run()
-
-    ping_presenter = PingOpTerminalPresenter()
-    PingOp('http://download.thinkbroadband.com/5MB.zip', delegate=ping_presenter).run()
+    operations_controller = HealthCheckupController()
+    operations_controller.operations = [
+        DnsLookupOp('accezz.io'),
+        DnsLookupOp('yahoo.com'),
+        PingOp('http://download.thinkbroadband.com/5MB.zip')
+    ]
+    operations_controller.run()
