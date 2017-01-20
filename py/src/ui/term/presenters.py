@@ -31,3 +31,41 @@ class PingOpTerminalPresenter:
             op.hostname,
             result.average_ping_time,
             ' ' * 10))
+
+SPEED_MAGNITUDES = {
+    0: "bps",
+    1: 'Kbps',
+    2: 'Mbps',
+    3: 'Gbps'
+}
+
+class SpeedTestOpTerminalPresenter:
+    def present_op(self, op):
+        print("Measuring download speed from '%s'..." % op.url, end='')
+
+    def present_speed_measurement_and_progress(self, op, speed, progress, bar_length=20):
+        speed, magnitude = self._formatted_speed(speed)
+        done = int(bar_length * progress)
+        remaining = int(bar_length - done)
+        print("\rMeasuring download speed from '%s': [%s%s] %.2f %s" % (
+            op.url,
+            '=' * done,
+            ' ' * remaining,
+            speed,
+            magnitude), end='')
+
+    def present_op_with_result(self, op, result):
+        speed, magnitude = self._formatted_speed(result.average_download_speed)
+        print("\rAverage download speed from '%s': %.2f %s" % (op.url, speed, magnitude))
+
+    def _formatted_speed(self, speed):
+        magnitude = self._determine_speed_magnitude(speed)
+        speed /= 10**(3*magnitude)
+        return (speed, SPEED_MAGNITUDES[magnitude])
+
+    def _determine_speed_magnitude(self, speed):
+        digits = 0
+        while speed > 0:
+            speed //= 10
+            digits += 1
+        return digits // 3

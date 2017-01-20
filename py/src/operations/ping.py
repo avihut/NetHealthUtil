@@ -28,7 +28,7 @@ class PingOpResult(OperationResult):
 class PingOp(Operation):
     def __init__(self, url, count=3, delegate=None):
         if delegate and not isinstance(delegate, PingOpDelegate):
-            raise TypeError('delegate must be of type PingOpDelegate')
+            raise TypeError('delegate must be of type %s' % PingOpDelegate.__name__)
 
         super().__init__(delegate=delegate)
         self.url = url
@@ -42,24 +42,24 @@ class PingOp(Operation):
 
         process = Popen([PING_CMD, PING_OPT_COUNT, str(self.count), self.hostname], stdout=PIPE)
         self.ping_times = []
-        self.__parse_ping_cmd_output(process)
+        self._parse_ping_cmd_output(process)
         result = PingOpResult(ping_times=self.ping_times)
 
         delegate.ping_operation_finished(self, result)
         return result
 
-    def __parse_ping_cmd_output(self, process):
+    def _parse_ping_cmd_output(self, process):
         pings_count = 1
         for ping_line in iter(process.stdout.readline, b''):
             ping_line = ping_line.decode()
-            ping_time_str = self.__extract_ping_time_from_line(ping_line)
+            ping_time_str = self._extract_ping_time_from_line(ping_line)
             if ping_time_str:
                 ping_time = float(ping_time_str)
                 self.ping_times.append(ping_time)
                 self.delegate.new_ping_result(self, pings_count, self.count, ping_time) if self.delegate else None
                 pings_count += 1
 
-    def __extract_ping_time_from_line(self, line):
+    def _extract_ping_time_from_line(self, line):
         matches = re.search('.*time=(\d+.\d*)', line)
         if matches:
             return matches.group(1)
