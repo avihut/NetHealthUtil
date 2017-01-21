@@ -8,8 +8,9 @@ class OperationsController(DnsLookupDelegate, ConnectivityOpDelegate):
 
     def run(self):
         for op in self.operations:
-            op.delegate = self
-            op.run()
+            if op:
+                op.delegate = self
+                op.run()
 
     def _initialize_presenters(self):
         self._dns_lookup_presenter = DnsLookupTerminalPresenter()

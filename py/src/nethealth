@@ -2,12 +2,13 @@
 
 if __name__ == '__main__':
     from controllers import OperationsController
-    from operations import DnsLookupOp, ConnectivityOp  # PingOp, SpeedTestOp
+    from store.files import OperationsFile
 
+    ops_filepath = '/Users/avihut/Develop/NetHealthUtil/sample/nethealthconf.json'
     operations_controller = OperationsController()
-    operations_controller.operations = [
-        DnsLookupOp('accezz.io'),
-        DnsLookupOp('yahoo.com'),
-        ConnectivityOp('http://download.thinkbroadband.com/50MB.zip')
-    ]
-    operations_controller.run()
+    try:
+        operations_controller.operations = OperationsFile(ops_filepath).getOperations()
+    except FileNotFoundError:
+        print("Could not open file '%s'" % ops_filepath)
+    else:
+        operations_controller.run()
