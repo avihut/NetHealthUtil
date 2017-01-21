@@ -2,13 +2,12 @@
 
 if __name__ == '__main__':
     from controllers import OperationsController
-    from operations import DnsLookupOp, PingOp, SpeedTestOp
+    from operations import DnsLookupOp, ConnectivityOp  # PingOp, SpeedTestOp
 
     operations_controller = OperationsController()
     operations_controller.operations = [
         DnsLookupOp('accezz.io'),
         DnsLookupOp('yahoo.com'),
-        PingOp('http://download.thinkbroadband.com/5MB.zip'),
-        SpeedTestOp('http://download.thinkbroadband.com/5MB.zip')
+        ConnectivityOp('http://download.thinkbroadband.com/50MB.zip')
     ]
     operations_controller.run()

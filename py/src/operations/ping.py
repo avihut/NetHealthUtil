@@ -45,7 +45,7 @@ class PingOp(Operation):
         self._parse_ping_cmd_output(process)
         result = PingOpResult(ping_times=self.ping_times)
 
-        delegate.ping_operation_finished(self, result)
+        delegate.ping_operation_finished(self, result) if delegate else None
         return result
 
     def _parse_ping_cmd_output(self, process):

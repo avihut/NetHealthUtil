@@ -1,4 +1,5 @@
 from ui.term.spinner import Spinner
+import sys
 
 class DnsLookupTerminalPresenter:
     def present_dns_lookup_op(self, op, result_pending=True):
@@ -42,6 +43,7 @@ SPEED_MAGNITUDES = {
 class SpeedTestOpTerminalPresenter:
     def present_op(self, op):
         print("Measuring download speed from '%s'..." % op.url, end='')
+        sys.stdout.flush()
 
     def present_speed_measurement_and_progress(self, op, speed, progress, bar_length=20):
         speed, magnitude = self._formatted_speed(speed)
@@ -58,6 +60,9 @@ class SpeedTestOpTerminalPresenter:
         speed, magnitude = self._formatted_speed(result.average_download_speed)
         print("\rAverage download speed from '%s': %.2f %s" % (op.url, speed, magnitude))
 
+    def present_speedtest_error(self, op, error_message):
+        print("\rFailed measuring download speed to '%s': %s" % (op.url, error_message))
+
     def _formatted_speed(self, speed):
         magnitude = self._determine_speed_magnitude(speed)
         speed /= 10**(3*magnitude)
@@ -69,3 +74,7 @@ class SpeedTestOpTerminalPresenter:
             speed //= 10
             digits += 1
         return digits // 3
+
+class ConnectivityPresenter:
+    def present_op(self, op):
+        print("CONNECTIVITY test to '%s':" % op.url)

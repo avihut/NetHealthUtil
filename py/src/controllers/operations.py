@@ -1,7 +1,7 @@
-from ui.term.presenters import DnsLookupTerminalPresenter, PingOpTerminalPresenter, SpeedTestOpTerminalPresenter
-from operations import DnsLookupDelegate, PingOpDelegate, SpeedTestOpDelegate
+from ui.term.presenters import DnsLookupTerminalPresenter, PingOpTerminalPresenter, SpeedTestOpTerminalPresenter, ConnectivityPresenter
+from operations import DnsLookupDelegate, ConnectivityOpDelegate
 
-class OperationsController(DnsLookupDelegate, PingOpDelegate, SpeedTestOpDelegate):
+class OperationsController(DnsLookupDelegate, ConnectivityOpDelegate):
     def __init__(self):
         self.operations = []
         self._initialize_presenters()
@@ -15,6 +15,7 @@ class OperationsController(DnsLookupDelegate, PingOpDelegate, SpeedTestOpDelegat
         self._dns_lookup_presenter = DnsLookupTerminalPresenter()
         self._ping_op_presenter = PingOpTerminalPresenter()
         self._speedtest_op_presenter = SpeedTestOpTerminalPresenter()
+        self._conectivity_op_presenter = ConnectivityPresenter()
 
     # MARK: DnsLookupDelegate
 
@@ -45,3 +46,11 @@ class OperationsController(DnsLookupDelegate, PingOpDelegate, SpeedTestOpDelegat
 
     def speedtest_finished(self, op, result):
         self._speedtest_op_presenter.present_op_with_result(op, result)
+
+    def speedtest_failed(self, op, error_message):
+        self._speedtest_op_presenter.present_speedtest_error(op, error_message)
+
+    # MARK: ConnectivityOpDelegate
+
+    def connectivity_operation_started(self, op):
+        self._conectivity_op_presenter.present_op(op)

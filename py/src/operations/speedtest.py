@@ -12,6 +12,9 @@ class SpeedTestOpDelegate(OperationDelegate):
     def speedtest_new_speed_measurement(self, op, speed, progress):
         pass
 
+    def speedtest_failed(self, op, error_message):
+        pass
+
 class SpeedTestResult(OperationResult):
     def __init__(self, average_download_speed):
         self.average_download_speed = average_download_speed
@@ -32,7 +35,12 @@ class SpeedTestOp(Operation):
         delegate.speedtest_started(self) if delegate else None
 
         with open(DEV_NULL_PATH, 'wb') as dev_null:
-            r = requests.get(self.url, stream=True)
+            try:
+                r = requests.get(self.url, stream=True)
+            except requests.exceptions.ConnectionError as e:
+                delegate.speedtest_failed(self, 'Failed to establish connection. Please make sure the URL is correct.') if delegate else None
+                return
+
             download_size = r.headers.get('content-length')
             downloaded = 0
             if download_size:
@@ -41,11 +49,11 @@ class SpeedTestOp(Operation):
                 for chunk in r.iter_content(CHUNK_SIZE):
                     downloaded += len(chunk)
                     dev_null.write(chunk)
-                    speed = int(downloaded / (time.time() - start))
+                    speed = int(downloaded / (time.time() - start)) * 8
                     progress = downloaded / download_size
                     delegate.speedtest_new_speed_measurement(self, speed, progress)
         download_time = time.time() - start
 
-        result = SpeedTestResult(download_size / download_time)
+        result = SpeedTestResult(download_size / download_time * 8)
         delegate.speedtest_finished(self, result)
         return result
