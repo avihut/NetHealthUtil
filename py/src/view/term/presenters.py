@@ -1,4 +1,4 @@
-from ui.term.spinner import Spinner
+from view.term.spinner import Spinner
 import sys
 
 class DnsLookupTerminalPresenter:

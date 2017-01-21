@@ -1,4 +1,4 @@
-from ui.term.presenters import DnsLookupTerminalPresenter, PingOpTerminalPresenter, SpeedTestOpTerminalPresenter, ConnectivityPresenter
+from view.term.presenters import DnsLookupTerminalPresenter, PingOpTerminalPresenter, SpeedTestOpTerminalPresenter, ConnectivityPresenter
 from operations import DnsLookupDelegate, ConnectivityOpDelegate
 
 class OperationsController(DnsLookupDelegate, ConnectivityOpDelegate):

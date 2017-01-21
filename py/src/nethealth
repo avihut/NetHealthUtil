@@ -3,5 +3,6 @@
 # This is the entry point of the application. Run this file to start the app.
 
 if __name__ == '__main__':
+    from util_config.cmd_args import CmdArgsUtilConfig
     from main import NetworkHealthUtility
-    NetworkHealthUtility().start()
+    NetworkHealthUtility(config=CmdArgsUtilConfig()).start()
