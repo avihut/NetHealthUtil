@@ -28,3 +28,4 @@ class OperationsFile:
     def _create_connectivity_operation(cls, args):
         args = list(args.values())
         return ConnectivityOp(*args)
+

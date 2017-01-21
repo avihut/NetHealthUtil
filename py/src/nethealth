@@ -1,14 +1,7 @@
 #!/usr/local/bin/python3
 
-if __name__ == '__main__':
-    from controllers import OperationsController
-    from store.files import OperationsFile
+# This is the entry point of the application. Run this file to start the app.
 
-    ops_filepath = '/Users/avihut/Develop/NetHealthUtil/sample/nethealthconf.json'
-    operations_controller = OperationsController()
-    try:
-        operations_controller.operations = OperationsFile(ops_filepath).getOperations()
-    except FileNotFoundError:
-        print("Could not open file '%s'" % ops_filepath)
-    else:
-        operations_controller.run()
+if __name__ == '__main__':
+    from main import NetworkHealthUtility
+    NetworkHealthUtility().start()
