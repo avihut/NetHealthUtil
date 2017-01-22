@@ -5,21 +5,29 @@ import json
 
 class OperationsStoreFileJSON(OperationsStore):
     def __init__(self, path):
+        with open(path) as _:
+            pass
+
         self.path = path
         self.instantiate = {
             'DnsLookup': self._create_dns_lookup_operation,
             'Connectivity': self._create_connectivity_operation
         }
+        self.operations = None
 
     def get_operations(self):
-        operations = []
-        with open(self.path) as operations_file:
-            operations_data = json.load(operations_file)
-            for operation_config in operations_data:
-                operation_name = list(operation_config.keys())[0]
-                args = operation_config[operation_name]
-                operations.append(self.instantiate[operation_name](args))
-        return operations
+        if not self.operations:
+            self.operations = []
+            with open(self.path) as operations_file:
+                operations_data = json.load(operations_file)
+                for operation_config in operations_data:
+                    operation_name = list(operation_config.keys())[0]
+                    args = operation_config[operation_name]
+                    self.operations.append(self.instantiate[operation_name](args))
+        return self.operations
+
+    def reload_from_file(self):
+        self.operations = None
 
     # In both creation functions I have cut a corner and assumed that
     # the order of arguments is identical between the JSON object and

@@ -12,6 +12,6 @@ class ResultsStore:
 
 
 class Store:
-    def __init__(self, configuration_store=None, results_store=None):
-        self.configuration_store = configuration_store
+    def __init__(self, operations_store=None, results_store=None):
+        self.operations_store = operations_store
         self.results_store = results_store
