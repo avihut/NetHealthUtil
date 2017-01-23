@@ -17,8 +17,9 @@ class PingOpDelegate(OperationDelegate):
         pass
 
 class PingOpResult(OperationResult):
-    def __init__(self, timestamp=None, ping_times=[]):
+    def __init__(self, url, timestamp=None, ping_times=[]):
         super().__init__(timestamp=timestamp)
+        self.url = url
         self.ping_times = ping_times
 
     @property
@@ -43,7 +44,7 @@ class PingOp(Operation):
         process = Popen([PING_CMD, PING_OPT_COUNT, str(self.count), self.hostname], stdout=PIPE)
         self.ping_times = []
         self._parse_ping_cmd_output(process)
-        result = PingOpResult(ping_times=self.ping_times)
+        result = PingOpResult(url=self.url, ping_times=self.ping_times)
 
         delegate.ping_operation_finished(self, result) if delegate else None
         return result

@@ -1,6 +1,5 @@
 from controllers import OperationsController
-from store.files import OperationsStoreFileJSON
-from util_config import ConfigValidationError
+from util_config import ConfigError
 import sys
 
 
@@ -13,10 +12,13 @@ class NetworkHealthUtility:
     def start(self):
         try:
             self.config.load()
-        except ConfigValidationError as e:
+        except ConfigError as e:
             if not e.displayed_error:
-                print("Configuration error")
+                print("Configuration error: %s" % e.message)
             sys.exit(1)
 
         self.operations_controller.operations = self.config.store.operations_store.get_operations()
         self.operations_controller.run()
+
+        print('\nStoring results')
+        self.config.store.results_store.write(self.operations_controller.results)

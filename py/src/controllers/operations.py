@@ -4,13 +4,15 @@ from operations import DnsLookupDelegate, ConnectivityOpDelegate
 class OperationsController(DnsLookupDelegate, ConnectivityOpDelegate):
     def __init__(self):
         self.operations = []
+        self.results = []
         self._initialize_presenters()
 
     def run(self):
+        self.results = []
         for op in self.operations:
             if op:
                 op.delegate = self
-                op.run()
+                self.results.append(op.run())
 
     def _initialize_presenters(self):
         self._dns_lookup_presenter = DnsLookupTerminalPresenter()

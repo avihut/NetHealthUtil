@@ -1,1 +1,1 @@
-from util_config.base_config import UtilConfig, ConfigValidationError
+from util_config.base_config import UtilConfig, ConfigError

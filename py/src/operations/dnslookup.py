@@ -10,8 +10,9 @@ class DnsLookupDelegate(OperationDelegate):
         pass
 
 class DnsLookupResult(OperationResult):
-    def __init__(self, timestamp=None, ipv4s={}, ipv6s={}):
+    def __init__(self, url, timestamp=None, ipv4s={}, ipv6s={}):
         super().__init__(timestamp=timestamp)
+        self.url = url
         self.ipv4s = ipv4s
         self.ipv6s = ipv6s
 
@@ -30,7 +31,7 @@ class DnsLookupOp(Operation):
         delegate.dnslookup_started(self) if delegate else None
 
         ip = socket.gethostbyname(self.hostname)
-        result = DnsLookupResult(ipv4s = {ip})
+        result = DnsLookupResult(self.url, ipv4s={ip})
 
         delegate.dnslookup_finished(self, result) if delegate else None
         return result

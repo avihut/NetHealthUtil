@@ -1,5 +1,5 @@
-from util_config import UtilConfig, ConfigValidationError
-from store.files import OperationsStoreFileJSON
+from store.files import OperationsStoreFileJSON, ResultsStoreFileJSON
+from util_config import UtilConfig, ConfigError
 from argparse import ArgumentParser
 
 
@@ -12,9 +12,8 @@ class CmdArgsUtilConfig(UtilConfig):
         self.parser.add_argument(
             '-t', '--tests-file',
             metavar='FILE',
-            required=False,
+            required=True,
             help='A file that contains network health test instructions',
-            default='/Users/avihut/Develop/NetHealthUtil/sample/nethealthconf_dns_only.json'
         )
         self.parser.add_argument(
             '-r', '--results-file',
@@ -34,9 +33,12 @@ class CmdArgsUtilConfig(UtilConfig):
         try:
             args = self.parser.parse_args()
         except SystemExit:
-            raise ConfigValidationError()
+            raise ConfigError()
 
         try:
             self.store.operations_store = OperationsStoreFileJSON(args.tests_file)
         except FileNotFoundError:
-            raise ConfigValidationError(message='Could not open file %s' % args.tests_file)
+            raise ConfigError(message='Could not open tests file %s' % args.tests_file, displayed_error=False)
+
+        if args.results_file:
+            self.store.results_store = ResultsStoreFileJSON(args.results_file)

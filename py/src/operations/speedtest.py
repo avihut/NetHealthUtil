@@ -16,7 +16,8 @@ class SpeedTestOpDelegate(OperationDelegate):
         pass
 
 class SpeedTestResult(OperationResult):
-    def __init__(self, average_download_speed):
+    def __init__(self, url, average_download_speed):
+        self.url = url
         self.average_download_speed = average_download_speed
 
 DEV_NULL_PATH = '/dev/null'
@@ -54,6 +55,6 @@ class SpeedTestOp(Operation):
                     delegate.speedtest_new_speed_measurement(self, speed, progress)
         download_time = time.time() - start
 
-        result = SpeedTestResult(download_size / download_time * 8)
+        result = SpeedTestResult(self.url, download_size / download_time * 8)
         delegate.speedtest_finished(self, result)
         return result

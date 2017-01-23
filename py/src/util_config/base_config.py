@@ -9,7 +9,8 @@ class UtilConfig:
         pass
 
 
-class ConfigValidationError(Exception):
+class ConfigError(BaseException):
     def __init__(self, message='', displayed_error=True):
-        super().__init__(message)
+        super().__init__()
+        self.message = message
         self.displayed_error = displayed_error

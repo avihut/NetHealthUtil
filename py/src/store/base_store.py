@@ -7,7 +7,7 @@ class ResultsStore:
     def get_results(self):
         pass
 
-    def write_results(self, results):
+    def write(self, results):
         pass
 
 
