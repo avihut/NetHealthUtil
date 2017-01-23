@@ -16,7 +16,8 @@ class SpeedTestOpDelegate(OperationDelegate):
         pass
 
 class SpeedTestResult(OperationResult):
-    def __init__(self, url, average_download_speed):
+    def __init__(self, url, average_download_speed, timestamp=None):
+        super().__init__(timestamp=timestamp)
         self.url = url
         self.average_download_speed = average_download_speed
 

@@ -1,6 +1,7 @@
 from operations import DnsLookupOp, DnsLookupResult, ConnectivityOp, PingOpResult, SpeedTestResult, ConnectivityResult
 from store import OperationsStore, ResultsStore
 from json import JSONEncoder
+import dateutil.parser
 import json
 
 
@@ -54,17 +55,28 @@ class ResultsStoreFileJSON(ResultsStore):
 
     def get_results(self):
         if not self.results:
-            self.results = []
             try:
                 with open(self.path, 'r') as results_file:
-                    pass
+                    results_data = json.load(results_file)
+                    decoder = ResultsDecoder()
+                    self.results = (decoder.decode_json(results_data))
+                    return self.results
             except FileNotFoundError:
-                pass
+                self.results = None
+                return None
         return self.results
 
-    def write(self, results):
+    def write(self, results, append_results=True):
         if not results:
             return
+
+        if append_results:
+            self.reload_results()
+            self.get_results()
+            if self.results:
+                all_results = self.results.copy()
+                all_results.extend(results)
+                results = all_results
 
         with open(self.path, 'w+') as results_file:
             json.dump(results, results_file, cls=ResultsEncoder)
@@ -73,15 +85,63 @@ class ResultsStoreFileJSON(ResultsStore):
         self.results = None
 
 
+class _RESULT_NAME:
+    DNS_LOOKUP = 'DNSLookupResult'
+    CONNECTIVITY = 'ConnectivityResult'
+    SPEEDTEST = 'SpeedTestResult'
+    PING = 'PingResult'
+
+class _ATTR_NAME:
+    TIMESTAMP = 'Time'
+    URL = 'URL'
+    PING_TIMES = 'PingTimes'
+    AVERAGE_DOWNLOAD_SPEED_BPS = 'AvgSpeedBps'
+    IPV4 = 'IPv4'
+    IPV6 = 'IPv6'
+
+
+class ResultsDecoder:
+    def __init__(self):
+        self._decoder_for_result = {
+            _RESULT_NAME.DNS_LOOKUP: self._decode_dnslookup_result,
+            _RESULT_NAME.CONNECTIVITY: self._decode_connectivity_result,
+        }
+
+    def decode_json(self, data):
+        results = []
+        for result_object in data:
+            result_name = list(result_object.keys())[0]
+            results.append(self._decoder_for_result[result_name](result_object[result_name]))
+        return results
+
+    @staticmethod
+    def _decode_dnslookup_result(data):
+        timestamp = dateutil.parser.parse(data[_ATTR_NAME.TIMESTAMP])
+        url = data[_ATTR_NAME.URL]
+        ipv4s = set(data[_ATTR_NAME.IPV4])
+        ipv6s = set(data[_ATTR_NAME.IPV6])
+        return DnsLookupResult(url=url, timestamp=timestamp, ipv4s=ipv4s, ipv6s=ipv6s)
+
+    @staticmethod
+    def _decode_connectivity_result(data):
+        timestamp = dateutil.parser.parse(data[_ATTR_NAME.TIMESTAMP])
+        url = data[_ATTR_NAME.URL]
+        ping_times = data[_ATTR_NAME.PING_TIMES]
+        average_download_speed = data[_ATTR_NAME.AVERAGE_DOWNLOAD_SPEED_BPS]
+        ping_result = PingOpResult(url=url, timestamp=timestamp, ping_times=ping_times)
+        speedtest_result = SpeedTestResult(url=url, average_download_speed=average_download_speed, timestamp=timestamp)
+        return ConnectivityResult(ping_result=ping_result, speedtest_result=speedtest_result)
+
+
 class ResultsEncoder(JSONEncoder):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.encoder = {
-            DnsLookupResult: self.encode_dns_lookup_result,
-            PingOpResult: self.encode_ping_result,
-            SpeedTestResult: self.encode_speedtest_result,
-            ConnectivityResult: self.encode_connectivity_result
+            DnsLookupResult: self._encode_dns_lookup_result,
+            PingOpResult: self._encode_ping_result,
+            SpeedTestResult: self._encode_speedtest_result,
+            ConnectivityResult: self._encode_connectivity_result
         }
 
     def default(self, o):
@@ -92,32 +152,36 @@ class ResultsEncoder(JSONEncoder):
 
         return encoder(o)
 
-    def encode_dns_lookup_result(self, result):
-        d = {'DNSLookupResult': dict()}
-        d['DNSLookupResult']['Time'] = str(result.timestamp)
-        d['DNSLookupResult']['URL'] = result.url
-        d['DNSLookupResult']['IPv4'] = list(result.ipv4s)
-        d['DNSLookupResult']['IPv6'] = list(result.ipv6s)
+    @staticmethod
+    def _encode_dns_lookup_result(result):
+        d = {_RESULT_NAME.DNS_LOOKUP: dict()}
+        d[_RESULT_NAME.DNS_LOOKUP][_ATTR_NAME.TIMESTAMP] = result.timestamp.isoformat()
+        d[_RESULT_NAME.DNS_LOOKUP][_ATTR_NAME.URL] = result.url
+        d[_RESULT_NAME.DNS_LOOKUP][_ATTR_NAME.IPV4] = list(result.ipv4s)
+        d[_RESULT_NAME.DNS_LOOKUP][_ATTR_NAME.IPV6] = list(result.ipv6s)
         return d
 
-    def encode_ping_result(self, result):
-        d = {'PingResult': dict()}
-        d['PingResult']['Time'] = str(result.timestamp)
-        d['PingResult']['URL'] = result.url
-        d['PingResult']['Times'] = result.ping_times
+    @staticmethod
+    def _encode_ping_result(result):
+        d = {_RESULT_NAME.PING: dict()}
+        d[_RESULT_NAME.PING][_ATTR_NAME.TIMESTAMP] = result.timestamp.isoformat()
+        d[_RESULT_NAME.PING][_ATTR_NAME.URL] = result.url
+        d[_RESULT_NAME.PING][_ATTR_NAME.PING_TIMES] = result.ping_times
         return d
 
-    def encode_speedtest_result(self, result):
-        d = {'SpeedTestResult': dict()}
-        d['SpeedTestResult']['Time'] = result.timestamp
-        d['SpeedTestResult']['URL'] = result.url
-        d['SpeedTestResult']['AvgSpeedBps'] = result.average_download_speed
+    @staticmethod
+    def _encode_speedtest_result(result):
+        d = {_RESULT_NAME.SPEEDTEST: dict()}
+        d[_RESULT_NAME.SPEEDTEST][_ATTR_NAME.TIMESTAMP] = result.timestamp.isoformat()
+        d[_RESULT_NAME.SPEEDTEST][_ATTR_NAME.URL] = result.url
+        d[_RESULT_NAME.SPEEDTEST][_ATTR_NAME.AVERAGE_DOWNLOAD_SPEED_BPS] = result.average_download_speed
         return d
 
-    def encode_connectivity_result(self, result):
-        d = {'ConnectivityResult': dict()}
-        d['ConnectivityResult']['Time'] = str(result.ping_result.timestamp)
-        d['ConnectivityResult']['URL'] = result.ping_result.url
-        d['ConnectivityResult']['PingTimes'] = result.ping_result.ping_times
-        d['ConnectivityResult']['AvgSpeedBps'] = result.speedtest_result.average_download_speed
+    @staticmethod
+    def _encode_connectivity_result(result):
+        d = {_RESULT_NAME.CONNECTIVITY: dict()}
+        d[_RESULT_NAME.CONNECTIVITY][_ATTR_NAME.TIMESTAMP] = result.ping_result.timestamp.isoformat()
+        d[_RESULT_NAME.CONNECTIVITY][_ATTR_NAME.URL] = result.ping_result.url
+        d[_RESULT_NAME.CONNECTIVITY][_ATTR_NAME.PING_TIMES] = result.ping_result.ping_times
+        d[_RESULT_NAME.CONNECTIVITY][_ATTR_NAME.AVERAGE_DOWNLOAD_SPEED_BPS] = result.speedtest_result.average_download_speed
         return d
