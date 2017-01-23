@@ -1,8 +1,10 @@
 from datetime import datetime
 
+
 class OperationResult:
     def __init__(self, timestamp=None):
         self.timestamp = (timestamp if timestamp else datetime.now())
+
 
 class OperationDelegate:
     def operation_started(self, op):
@@ -10,6 +12,7 @@ class OperationDelegate:
 
     def operation_finished(self, op, result):
         pass
+
 
 class Operation:
     def __init__(self, delegate=None):
