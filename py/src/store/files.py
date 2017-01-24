@@ -91,6 +91,7 @@ class _RESULT_NAME:
     SPEEDTEST = 'SpeedTestResult'
     PING = 'PingResult'
 
+
 class _ATTR_NAME:
     TIMESTAMP = 'Time'
     URL = 'URL'

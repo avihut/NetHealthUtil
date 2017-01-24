@@ -1,6 +1,7 @@
 from view.term.spinner import Spinner
 import sys
 
+
 class DnsLookupTerminalPresenter:
     def present_dns_lookup_op(self, op, result_pending=True):
         op_description = "DNS LOOKUP '%s': " % op.hostname
@@ -11,6 +12,10 @@ class DnsLookupTerminalPresenter:
 
     def present_dns_lookup_result(self, result):
         print("IPv4: %s, IPv6: %s" % (str(result.ipv4s), str(result.ipv6s)))
+
+    def show_difference_between_results(self, new_result, previous_result):
+        pass
+
 
 class PingOpTerminalPresenter:
     def present_op(self, op):
@@ -33,12 +38,21 @@ class PingOpTerminalPresenter:
             result.average_ping_time,
             ' ' * 10))
 
-SPEED_MAGNITUDES = {
+    @staticmethod
+    def show_difference_between_results(new_result, previous_result):
+        ping_difference = new_result.average_ping_time - previous_result.average_ping_time
+        if ping_difference != 0:
+            difference = "longer" if ping_difference > 0 else "shorter"
+            print("Latency to %s is %s by %.3f ms" % (new_result.hostname, difference, abs(ping_difference)))
+
+
+_SPEED_MAGNITUDES = {
     0: "bps",
     1: 'Kbps',
     2: 'Mbps',
     3: 'Gbps'
 }
+
 
 class SpeedTestOpTerminalPresenter:
     def present_op(self, op):
@@ -63,18 +77,34 @@ class SpeedTestOpTerminalPresenter:
     def present_speedtest_error(self, op, error_message):
         print("\rFailed measuring download speed to '%s': %s" % (op.url, error_message))
 
-    def _formatted_speed(self, speed):
-        magnitude = self._determine_speed_magnitude(speed)
+    @staticmethod
+    def _formatted_speed(speed):
+        magnitude = SpeedTestOpTerminalPresenter._determine_speed_magnitude(speed)
         speed /= 10**(3*magnitude)
-        return (speed, SPEED_MAGNITUDES[magnitude])
+        return (speed, _SPEED_MAGNITUDES[magnitude])
 
-    def _determine_speed_magnitude(self, speed):
+    @staticmethod
+    def _determine_speed_magnitude(speed):
         digits = 0
         while speed > 0:
             speed //= 10
             digits += 1
+        digits = (digits - 1 if digits > 0 else digits)
         return digits // 3
+
+    @staticmethod
+    def show_difference_between_results(new_result, previous_result):
+        speed_difference = new_result.average_download_speed - previous_result.average_download_speed
+        if speed_difference != 0:
+            difference = "faster" if speed_difference > 0 else "slower"
+            speed, magnitude = SpeedTestOpTerminalPresenter._formatted_speed(abs(speed_difference))
+            print("Download speed from %s is %s by %.2f %s" % (new_result.url, difference, speed, magnitude))
+
 
 class ConnectivityPresenter:
     def present_op(self, op):
         print("CONNECTIVITY test to '%s':" % op.url)
+
+    def show_difference_between_results(self, new_result, previous_result):
+        PingOpTerminalPresenter.show_difference_between_results(new_result.ping_result, previous_result.ping_result)
+        SpeedTestOpTerminalPresenter.show_difference_between_results(new_result.speedtest_result, previous_result.speedtest_result)

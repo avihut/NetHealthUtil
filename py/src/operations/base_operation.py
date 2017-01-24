@@ -5,6 +5,9 @@ class OperationResult:
     def __init__(self, timestamp=None):
         self.timestamp = (timestamp if timestamp else datetime.now())
 
+    def __gt__(self, other):
+        return self.timestamp > other.timestamp
+
 
 class OperationDelegate:
     def operation_started(self, op):

@@ -3,8 +3,15 @@ from subprocess import Popen, PIPE
 from urllib.parse import urlparse
 import re
 
+
 PING_CMD = 'ping'
 PING_OPT_COUNT = '-c'
+
+
+def _extract_hostname_from(url):
+    parsed_url = urlparse(url)
+    return (parsed_url.netloc if parsed_url.netloc else parsed_url.path)
+
 
 class PingOpDelegate(OperationDelegate):
     def ping_operation_started(self, op):
@@ -16,15 +23,18 @@ class PingOpDelegate(OperationDelegate):
     def new_ping_result(self, op, ping_number, total_pings_count, ping_time):
         pass
 
+
 class PingOpResult(OperationResult):
     def __init__(self, url, timestamp=None, ping_times=[]):
         super().__init__(timestamp=timestamp)
         self.url = url
+        self.hostname = _extract_hostname_from(self.url)
         self.ping_times = ping_times
 
     @property
     def average_ping_time(self):
         return sum(self.ping_times) / len(self.ping_times)
+
 
 class PingOp(Operation):
     def __init__(self, url, count=3, delegate=None):
@@ -34,8 +44,7 @@ class PingOp(Operation):
         super().__init__(delegate=delegate)
         self.url = url
         self.count = count
-        parsed_url = urlparse(self.url)
-        self.hostname = (parsed_url.netloc if parsed_url.netloc else parsed_url.path)
+        self.hostname = _extract_hostname_from(self.url)
 
     def run(self):
         delegate = self.delegate

@@ -1,15 +1,20 @@
-from operations.base_operation import Operation
 from operations.speedtest import SpeedTestOp, SpeedTestOpDelegate
+from operations.base_operation import Operation, OperationResult
 from operations.ping import PingOp, PingOpDelegate
 
 class ConnectivityOpDelegate(PingOpDelegate, SpeedTestOpDelegate):
     def connectivity_operation_started(self, op):
         pass
 
-class ConnectivityResult:
+class ConnectivityResult(OperationResult):
     def __init__(self, ping_result, speedtest_result):
+        super().__init__(timestamp=ping_result.timestamp)
         self.ping_result = ping_result
         self.speedtest_result = speedtest_result
+
+    @property
+    def url(self):
+        return self.ping_result.url
 
 class ConnectivityOp(Operation):
     def __init__(self, url, ping_count=3, delegate=None):
