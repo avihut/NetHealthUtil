@@ -14,7 +14,23 @@ class DnsLookupTerminalPresenter:
         print("IPv4: %s, IPv6: %s" % (str(result.ipv4s), str(result.ipv6s)))
 
     def show_difference_between_results(self, new_result, previous_result):
-        pass
+        new_ipv4s = new_result.ipv4s - previous_result.ipv4s
+        deprecated_ipv4s = previous_result.ipv4s - new_result.ipv4s
+        new_ipv6s = new_result.ipv6s - previous_result.ipv6s
+        deprecated_ipv6s = previous_result.ipv6s - new_result.ipv6s
+
+        differences = []
+        if new_ipv4s:
+            differences.append('New IPv4 addresses: %s' % new_ipv4s)
+        if deprecated_ipv4s:
+            differences.append('Deprecated IPv4 adresses: %s' % deprecated_ipv4s)
+        if new_ipv6s:
+            differences.append('New IPv6 addresses: %s' % new_ipv6s)
+        if deprecated_ipv6s:
+            differences.append('Deprecated IPv6 addresses: %s' % deprecated_ipv6s)
+
+        if differences:
+            print("DNS changes for '%s': %s" % (new_result.url, '. '.join(differences)))
 
 
 class PingOpTerminalPresenter:

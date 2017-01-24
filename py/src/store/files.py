@@ -31,12 +31,6 @@ class OperationsStoreFileJSON(OperationsStore):
     def reload_from_file(self):
         self.operations = None
 
-    # In both creation functions I have cut a corner and assumed that
-    # the order of arguments is identical between the JSON object and
-    # the arguments order of the python object constructed.
-    # A better implementation would have been an actual mapping between
-    # the JSON object properties and the python objet's keword-arguments.
-
     @classmethod
     def _create_dns_lookup_operation(cls, args):
         args = list(args.values())

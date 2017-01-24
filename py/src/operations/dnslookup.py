@@ -10,7 +10,7 @@ class DnsLookupDelegate(OperationDelegate):
         pass
 
 class DnsLookupResult(OperationResult):
-    def __init__(self, url, timestamp=None, ipv4s={}, ipv6s={}):
+    def __init__(self, url, timestamp=None, ipv4s=set(), ipv6s=set()):
         super().__init__(timestamp=timestamp)
         self.url = url
         self.ipv4s = ipv4s
