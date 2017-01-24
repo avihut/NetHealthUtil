@@ -86,3 +86,14 @@ The file is a JSON format. The top level element is an list wherein each object 
   }
 ]
 ```
+
+## Installing and Running the Utility
+
+_I'm still working on making the deployment and running of the utility easier. Something that has proved a bit more elusive since I chose to use python 3.6. But in the mean time following these requirements will allow the utility to run._
+
+To install the utility you will need python version +3.2
+
+1. Checkout this repository
+2. Change directory to `py`
+3. Run the script `install_dependencies.sh`
+4. Run the utility `py/src/nethealth`
