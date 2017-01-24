@@ -35,7 +35,6 @@ class DnsLookupOp(Operation):
         delegate = self.delegate
         delegate.dnslookup_started(self) if delegate else None
 
-        # ip = socket.gethostbyname(self.hostname)
         ipv4s = set()
         ipv6s = set()
         for connection_info in socket.getaddrinfo(self.hostname, _HTTP_PORT):
