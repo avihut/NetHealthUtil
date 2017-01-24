@@ -11,7 +11,16 @@ class DnsLookupTerminalPresenter:
             print(op_description)
 
     def present_dns_lookup_result(self, result):
-        print("IPv4: %s, IPv6: %s" % (str(result.ipv4s), str(result.ipv6s)))
+        result_strings = []
+        if result.ipv4s:
+            result_strings.append('IPv4: %s' % result.ipv4s)
+        if result.ipv6s:
+            result_strings.append('IPv6: %s' % result.ipv6s)
+
+        if result_strings:
+            print('%s' % ', '.join(result_strings))
+        else:
+            print('No IP addresses were found for host.')
 
     def show_difference_between_results(self, new_result, previous_result):
         new_ipv4s = new_result.ipv4s - previous_result.ipv4s
