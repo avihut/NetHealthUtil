@@ -12,6 +12,13 @@ The utlity expects a tests JSON file containing a network health tests configura
 
 Actual results will be saved to a results file in JSON format if a path is given. If the file already contains existing results, new results will be appended in the end. If comparable the difference between the new results and the previous will be written to the standard output.
 
+Table of contents
+=================
+
+  * [Tests File Format](#tests-file-format)
+  * [Results File Format](#results-file-format)
+  * [Installing and Running the Utility](#installing-and-running-the-utility)
+
 ### Tests File Format
 
 ```JSON
