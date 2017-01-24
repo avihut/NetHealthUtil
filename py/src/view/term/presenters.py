@@ -68,7 +68,7 @@ class PingOpTerminalPresenter:
         ping_difference = new_result.average_ping_time - previous_result.average_ping_time
         if ping_difference != 0:
             difference = "longer" if ping_difference > 0 else "shorter"
-            print("Latency to %s is %s by %.3f ms" % (new_result.hostname, difference, abs(ping_difference)))
+            print("Latency to %s is %s by %.3f ms since last time" % (new_result.hostname, difference, abs(ping_difference)))
 
 
 _SPEED_MAGNITUDES = {
@@ -123,7 +123,7 @@ class SpeedTestOpTerminalPresenter:
         if speed_difference != 0:
             difference = "faster" if speed_difference > 0 else "slower"
             speed, magnitude = SpeedTestOpTerminalPresenter._formatted_speed(abs(speed_difference))
-            print("Download speed from %s is %s by %.2f %s" % (new_result.url, difference, speed, magnitude))
+            print("Download speed from %s is %s by %.2f %s since last time" % (new_result.url, difference, speed, magnitude))
 
 
 class ConnectivityPresenter:
