@@ -1,5 +1,6 @@
 from operations.base_operation import Operation, OperationResult, OperationDelegate
 from urllib.parse import urlparse
+from socket import AddressFamily
 import socket
 
 class DnsLookupDelegate(OperationDelegate):
@@ -16,6 +17,10 @@ class DnsLookupResult(OperationResult):
         self.ipv4s = ipv4s
         self.ipv6s = ipv6s
 
+
+_HTTP_PORT = 80
+
+
 class DnsLookupOp(Operation):
     def __init__(self, url, delegate=None):
         if delegate and not isinstance(delegate, DnsLookupDelegate):
@@ -30,8 +35,18 @@ class DnsLookupOp(Operation):
         delegate = self.delegate
         delegate.dnslookup_started(self) if delegate else None
 
-        ip = socket.gethostbyname(self.hostname)
-        result = DnsLookupResult(self.url, ipv4s={ip})
+        # ip = socket.gethostbyname(self.hostname)
+        ipv4s = set()
+        ipv6s = set()
+        for connection_info in socket.getaddrinfo(self.hostname, _HTTP_PORT):
+            ip = connection_info[4][0]
+            ip_type = connection_info[0]
+            if ip_type == AddressFamily.AF_INET:
+                ipv4s.add(ip)
+            elif ip_type == AddressFamily.AF_INET6:
+                ipv6s.add(ip)
+
+        result = DnsLookupResult(self.url, ipv4s=ipv4s, ipv6s=ipv6s)
 
         delegate.dnslookup_finished(self, result) if delegate else None
         return result

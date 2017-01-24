@@ -4,7 +4,7 @@ from operations import DnsLookupDelegate, ConnectivityOpDelegate, DnsLookupResul
 class OperationsController(DnsLookupDelegate, ConnectivityOpDelegate):
     def __init__(self, operations, previous_results=[]):
         self.operations = operations
-        self.previous_results = previous_results
+        self.previous_results = (previous_results if previous_results else [])
         self.results = []
         self._initialize_presenters()
 
@@ -21,8 +21,10 @@ class OperationsController(DnsLookupDelegate, ConnectivityOpDelegate):
 
     def _find_last_comparable_result(self, result):
         comparable_results = list(filter(lambda x: type(x) == type(result) and x.url == result.url, self.previous_results))
-        comparable_results.sort()
-        return comparable_results[-1]
+        if comparable_results:
+            comparable_results.sort()
+            return comparable_results[-1]
+        return None
 
     def _show_difference_in_results(self, new_result, previous_result):
         self._presenter_for_result_type[type(new_result)].show_difference_between_results(new_result, previous_result)
