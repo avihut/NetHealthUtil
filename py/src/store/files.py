@@ -12,7 +12,7 @@ class OperationsStoreFileJSON(OperationsStore):
 
         self.path = path
         self.instantiate = {
-            'DnsLookup': self._create_dns_lookup_operation,
+            'DNSLookup': self._create_dns_lookup_operation,
             'Connectivity': self._create_connectivity_operation
         }
         self.operations = None
@@ -24,22 +24,22 @@ class OperationsStoreFileJSON(OperationsStore):
                 operations_data = json.load(operations_file)
                 for operation_config in operations_data:
                     operation_name = list(operation_config.keys())[0]
-                    args = operation_config[operation_name]
-                    self.operations.append(self.instantiate[operation_name](args))
+                    operation_data = operation_config[operation_name]
+                    self.operations.append(self.instantiate[operation_name](operation_data))
         return self.operations
 
     def reload_from_file(self):
         self.operations = None
 
     @classmethod
-    def _create_dns_lookup_operation(cls, args):
-        args = list(args.values())
-        return DnsLookupOp(*args)
+    def _create_dns_lookup_operation(cls, data):
+        url = data['URL']
+        return DnsLookupOp(url=url)
 
     @classmethod
-    def _create_connectivity_operation(cls, args):
-        args = list(args.values())
-        return ConnectivityOp(*args)
+    def _create_connectivity_operation(cls, data):
+        url = data['URL']
+        return ConnectivityOp(url=url)
 
 
 class ResultsStoreFileJSON(ResultsStore):

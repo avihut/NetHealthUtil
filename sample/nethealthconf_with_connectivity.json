@@ -1,11 +1,11 @@
 [
   {
-    "DnsLookup": {
+    "DNSLookup": {
       "URL": "accezz.io"
     }
   },
   {
-    "DnsLookup": {
+    "DNSLookup": {
       "URL": "yahoo.com"
     }
   },
