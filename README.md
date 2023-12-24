@@ -1,16 +1,18 @@
+_A solution to a home exercise_
+
 # Network Health Utility
 
 A utility for inspecting current communication status to network locations by checking their visible IP addresses, connection latency and the download speed from them.
 
-The utility is meant to be oeprable from the command line:
+The utility is meant to be operable from the command line:
 
 ```
 nethealth --tests-file FILE [--results-file FILE]
 ```
 
-The utlity expects a tests JSON file containing a network health tests configuration. This is the only way to indicate to the utility what tests will actually run. Human readable description of the progress of the utility will be printed to the standard output.
+The utility expects a tests JSON file containing a network health tests configuration. This is the only way to indicate to the utility what tests will actually run. A human-readable description of the progress of the utility will be printed to the standard output.
 
-Actual results will be saved to a results file in JSON format if a path is given. If the file already contains existing results, new results will be appended in the end. If comparable the difference between the new results and the previous will be written to the standard output.
+Actual results will be saved to a results file in JSON format if a path is given. If the file already contains existing results, new results will be appended at the end. If comparable the difference between the new results and the previous will be written to the standard output.
 
 Table of contents
 =================
@@ -41,7 +43,7 @@ Table of contents
 ]
 ```
 
-The file is a JSON format. The top level element is an list wherein each object is an operation. The operation has a single key which is its name. The key's data is another dictionary containing the parameteres of the operation.
+The file is a JSON format. The top-level element is a list wherein each object is an operation. The operation has a single key which is its name. The key's data is another dictionary containing the parameters of the operation.
 
 ### Results File Format
 
@@ -96,11 +98,11 @@ The file is a JSON format. The top level element is an list wherein each object 
 
 ## Installing and Running the Utility
 
-_I'm still working on making the deployment and running of the utility easier. Something that has proved a bit more elusive since I chose to use python 3.6. But in the mean time following these requirements will allow the utility to run._
+_I'm still working on making the deployment and running of the utility easier. Something that has proved a bit more elusive since I chose to use Python 3.6. But in the meantime following these requirements will allow the utility to run._
 
-To install the utility you will need python version +3.2
+To install the utility you will need Python version +3.2
 
 1. Checkout this repository
-2. Change directory to `py`
+2. Change the directory to `py`
 3. Run the script `install_dependencies.sh`
 4. Run the utility `py/src/nethealth`
